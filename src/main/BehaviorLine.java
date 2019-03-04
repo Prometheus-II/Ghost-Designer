@@ -15,6 +15,7 @@ public class BehaviorLine extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JTextField textField;
 	
+	
 	public BehaviorLine() {
 		setBorder(new LineBorder(new Color(0, 0, 0)));
 		setMaximumSize(new Dimension(500, 30));

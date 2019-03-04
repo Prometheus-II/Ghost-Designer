@@ -430,6 +430,21 @@ public class App {
 		btnClear.setBounds(191, 701, 89, 23);
 		frame.getContentPane().add(btnClear);
 		
+		JButton btnRemoveNewest = new JButton("Remove Newest");
+		btnRemoveNewest.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(cont.list.size() == 0)
+					return;
+				JPanel p = cont.list.get(cont.list.size()-1);
+				cont.remove(p);
+				cont.list.remove(p);
+				cont.revalidate();
+				cont.repaint();
+			}
+		});
+		btnRemoveNewest.setBounds(270, 651, 145, 23);
+		frame.getContentPane().add(btnRemoveNewest);
+		
 		AskGiveUpPanel.setVisible(false);
 		
 		TimedInputPanel.setVisible(false);
@@ -444,7 +459,6 @@ public class App {
         	{
 				if(ghostRoot == null)
 				{
-					//System.out.println("Choose a root for the ghost first, so you can get the picture from resources");
 					JOptionPane.showMessageDialog(frame, "Choose a root for the ghost first, so you can get the picture from the resources folder.");
 					return;
 				}
@@ -581,8 +595,13 @@ public class App {
 		return str;
 	}
 	
-	public void WriteGson(String filetarget)
+	public Boolean WriteGson(String filetarget)
 	{
+		if(cont.list.isEmpty()) {
+			JOptionPane.showMessageDialog(frame, "No lines defined. You should have at least one.");
+			return false;
+		}
+		
 		Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().serializeNulls().create();
 		String filename = filetarget + "\\resources\\"+txtbehavior.getText()+".json";
 		JsonObject obj = new JsonObject();
@@ -591,6 +610,11 @@ public class App {
 			JsonArray statements = new JsonArray();
 			for(int i = 0; i < cont.list.size(); i++)
 			{
+				if((cont.list.get(i) instanceof AskLine) || (cont.list.get(i) instanceof LongTalkLineContainer) || (cont.list.get(i) instanceof RandomizerLine))
+				{
+					JOptionPane.showMessageDialog(frame, "Lines of incorrect type defined in container.");
+					return false;
+				}
 				statements.add(((BehaviorLine) cont.list.get(i)).getText());
 			}
 			obj.add("statements", statements);
@@ -606,6 +630,11 @@ public class App {
 			{
 				if(cont.list.get(i) instanceof AskLine)
 					opts.add(((AskLine) cont.list.get(i)).getVals());
+				else if((cont.list.get(i) instanceof LongTalkLineContainer) || (cont.list.get(i) instanceof RandomizerLine))
+				{
+					JOptionPane.showMessageDialog(frame, "Lines of incorrect type defined in container.");
+					return false;
+				}
 				else
 					statements.add(((BehaviorLine) cont.list.get(i)).getText());
 			}
@@ -623,6 +652,11 @@ public class App {
 			ChainGroup[] list = new ChainGroup[cont.list.size()];
 			for(int i = 0; i < cont.list.size(); i++)
 			{
+				if(!(cont.list.get(i) instanceof LongTalkLineContainer))
+				{
+					JOptionPane.showMessageDialog(frame, "Lines of incorrect type defined in container.");
+					return false;
+				}
 				list[i] = ((LongTalkLineContainer) cont.list.get(i)).getValues();
 			}
 			obj.add("chains", gson.toJsonTree(list));
@@ -634,6 +668,11 @@ public class App {
 			JsonArray behaves = new JsonArray();
 			for(int i = 0; i < cont.list.size(); i++)
 			{
+				if(!(cont.list.get(i) instanceof RandomizerLine))
+				{
+					JOptionPane.showMessageDialog(frame, "Lines of incorrect type defined in container.");
+					return false;
+				}
 				behaves.add(((RandomizerLine) cont.list.get(i)).getBehavior());
 			}
 			obj.add("behaves", behaves);
@@ -645,8 +684,11 @@ public class App {
 			gson.toJson(obj, js);
 			js.close();
 		} catch (IOException e) {
+			JOptionPane.showMessageDialog(frame, "Failed to successfully create .JSON file.");
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 	
 	public String WriteTimedClass()
@@ -697,7 +739,10 @@ public class App {
 			JOptionPane.showMessageDialog(frame, "Information missing. Cannot create the behavior. Make sure everything's in place and try again.");
 			return;
 		}
-		WriteGson(ghostRoot.getPath());
+		if(!WriteGson(ghostRoot.getPath()))
+		{
+			return;
+		}
 		String classfilename = ghostRoot.getPath() + "\\src\\ghost_behaviors\\"+txtbehavior.getText()+".java";
 		try {
 			FileWriter fr = new FileWriter(classfilename);
@@ -711,7 +756,11 @@ public class App {
 			           fileManager.getJavaFileObjectsFromFiles(Arrays.asList(files));
 			List<String> options = new ArrayList<String>();
 			options.addAll(Arrays.asList("-classpath",ghostRoot.getAbsolutePath()+"\\ghostpet.jar;"+ghostRoot.getAbsolutePath()+"\\libs\\gson-2.8.5.jar","-d",ghostRoot.getAbsolutePath()+"\\bin"));
-			compiler.getTask(null, fileManager, null, options, null, compilationUnits).call();
+			if(!compiler.getTask(null, fileManager, null, options, null, compilationUnits).call())
+			{
+				JOptionPane.showMessageDialog(frame, "Compilation failed. Unsure why.");
+				return;
+			}
 			String jarupdate = "jar uf "+ghostRoot.getAbsolutePath()+"\\ghostpet.jar -C "+ghostRoot.getAbsolutePath()+"\\bin ghost_behaviors\\"+txtbehavior.getText()+".class";
 			
 			if(IsTimed.isSelected())
