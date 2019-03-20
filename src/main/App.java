@@ -98,8 +98,15 @@ public class App {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
+		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+		if(compiler == null)
+		{
+			JOptionPane.showMessageDialog(frame, "The compiler is null. Cannot compile.");
+			System.exit(0);
+		}
+		
 		JLabel selectedName = new JLabel("(No folder selected)");
-		selectedName.setBounds(131, 4, 113, 16);
+		selectedName.setBounds(10, 29, 282, 16);
 		frame.getContentPane().add(selectedName);
 		
 		JButton FolderSelect = new JButton("Select a folder...");
@@ -120,13 +127,13 @@ public class App {
         });
 		frame.getContentPane().add(FolderSelect);
 		
-		JLabel lblSelectTheFolder = new JLabel("<html><body style='width: 375px'>Select the folder where the ghost you're working with is placed. (If you downloaded it as a .zip, be sure to unzip it into its own folder first!)</html>");
-		lblSelectTheFolder.setBounds(258, 4, 492, 37);
+		JLabel lblSelectTheFolder = new JLabel("<html><body style='width: 300px'>Select the folder where the ghost you're working with is placed. (If you downloaded it as a .zip, be sure to unzip it into its own folder first!)</html>");
+		lblSelectTheFolder.setBounds(390, 4, 380, 49);
 		frame.getContentPane().add(lblSelectTheFolder);
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		panel.setBounds(10, 40, 250, 650);
+		panel.setBounds(10, 56, 250, 650);
 		frame.getContentPane().add(panel);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{0, 0};
@@ -210,7 +217,7 @@ public class App {
 					selectedImg.setEnabled(false);
 					AskGiveUpPanel.setVisible(false);
 				}
-				if(BehaviorCB.getSelectedItem() == "Randomizer")
+				if((BehaviorCB.getSelectedItem() == "Randomizer") || (BehaviorCB.getSelectedItem() == "Sequence"))
 				{
 					NewLongTalk.setEnabled(false);
 					NewNormal.setEnabled(false);
@@ -226,7 +233,7 @@ public class App {
 				cont.Clear();
 			}
 		});
-		BehaviorCB.setModel(new DefaultComboBoxModel<String>(new String[] {"Select...", "Normal", "Ask", "LongTalk", "Randomizer"}));
+		BehaviorCB.setModel(new DefaultComboBoxModel<String>(new String[] {"Select...", "Normal", "Ask", "LongTalk", "Randomizer", "Sequence"}));
 		
 		ImageSelect = new JButton("Select an image");
 		GridBagConstraints gbc_ImageSelect = new GridBagConstraints();
@@ -268,7 +275,7 @@ public class App {
 		gbc_ImplementsIRemember.gridy = 12;
 		panel.add(ImplementsIRemember, gbc_ImplementsIRemember);
 		
-		JLabel RememberWarning = new JLabel("<html><body style='width: 200px'>(Warning: to make use of remembered information, you'll need to edit the code yourself.)</html>");
+		JLabel RememberWarning = new JLabel("<html><body style='width: 175px'>(Warning: to make use of remembered information, you'll need to edit the code yourself.)</html>");
 		GridBagConstraints gbc_RememberWarning = new GridBagConstraints();
 		gbc_RememberWarning.insets = new Insets(0, 0, 5, 0);
 		gbc_RememberWarning.gridx = 0;
@@ -283,7 +290,7 @@ public class App {
 		gbc_IsTimed.gridy = 15;
 		panel.add(IsTimed, gbc_IsTimed);
 		
-		JLabel lblwarningThisWill = new JLabel("<html><body style='width: 200px'>(Warning: this will create a second new behavior, named \"Timer_[your name],\" that will contain the behavior you're making now.)</html>");
+		JLabel lblwarningThisWill = new JLabel("<html><body style='width: 175px'>(Warning: this will create a second new behavior, named \"Timer_[your name],\" that will contain the behavior you're making now.)</html>");
 		GridBagConstraints gbc_lblwarningThisWill = new GridBagConstraints();
 		gbc_lblwarningThisWill.anchor = GridBagConstraints.WEST;
 		gbc_lblwarningThisWill.insets = new Insets(0, 0, 5, 0);
@@ -388,7 +395,7 @@ public class App {
 		});
 		panel_1.add(NewLongTalk);
 		
-		NewRandom = new JButton("New Random");
+		NewRandom = new JButton("New Behavior");
 		NewRandom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				RandomizerLine l = new RandomizerLine();
@@ -399,7 +406,7 @@ public class App {
 		panel_1.add(NewRandom);
 		
 		cont = new BehaviorLineContainer();
-		cont.setBounds(270, 40, 500, 600);
+		cont.setBounds(270, 56, 500, 600);
 		frame.getContentPane().add(cont);
 		
 		btnDone = new JButton("Done");
@@ -408,7 +415,7 @@ public class App {
 				WriteEverything();
 			}
 		});
-		btnDone.setBounds(10, 701, 89, 23);
+		btnDone.setBounds(20, 727, 89, 23);
 		frame.getContentPane().add(btnDone);
 		
 		btnCancel = new JButton("Quit");
@@ -417,7 +424,7 @@ public class App {
 				System.exit(0);
 			}
 		});
-		btnCancel.setBounds(100, 701, 89, 23);
+		btnCancel.setBounds(131, 727, 89, 23);
 		frame.getContentPane().add(btnCancel);
 		
 		JButton btnClear = new JButton("Clear");
@@ -427,7 +434,7 @@ public class App {
 				frame.revalidate();
 			}
 		});
-		btnClear.setBounds(191, 701, 89, 23);
+		btnClear.setBounds(230, 727, 89, 23);
 		frame.getContentPane().add(btnClear);
 		
 		JButton btnRemoveNewest = new JButton("Remove Newest");
@@ -442,7 +449,7 @@ public class App {
 				cont.repaint();
 			}
 		});
-		btnRemoveNewest.setBounds(270, 651, 145, 23);
+		btnRemoveNewest.setBounds(270, 667, 145, 23);
 		frame.getContentPane().add(btnRemoveNewest);
 		
 		AskGiveUpPanel.setVisible(false);
@@ -478,104 +485,38 @@ public class App {
 	
 	public String writeClass()
 	{
-		String str = "";
-		
-		if(BehaviorCB.getSelectedItem() == "Normal")
-		{
-			str = "package ghost_behaviors;\r\n" + 
-					"\r\n" + 
-					"import ghostpet.GhostBase;\r\n" + 
-					"\r\n" + 
-					"public class Foobar extends Behavior ";
-			if(ImplementsIRemember.isSelected())
-			{
-				str = str+"implements IRememberBehavior ";
-			}
-			str = str+
-					"{\r\n" +
-					"\r\n" + 
-					"	public Foobar(GhostBase frame) {\r\n" + 
-					"		super(frame);\r\n" + 
-					"		\r\n" + 
-					"	}\r\n" + 
-					"\r\n" + 
-					"	public Foobar() {\r\n" + 
-					"\r\n" + 
-					"	}\r\n" + 
-					"\r\n";
+		String str = "package ghost_behaviors;\r\n" + 
+				"\r\n" + 
+				"import ghostpet.GhostBase;\r\n" + 
+				"\r\n" + 
+				"public class Foobar extends ";
+		if(BehaviorCB.getSelectedItem() == "Normal"){
+			str = str+"Behavior ";
 		}
-		else if(BehaviorCB.getSelectedItem() == "Ask")
-		{
-			str = "package ghost_behaviors;\r\n" + 
-					"\r\n" + 
-					"import ghostpet.GhostBase;\r\n" + 
-					"\r\n" + 
-					"public class Foobar extends Behavior_Ask ";
-			if(ImplementsIRemember.isSelected())
-			{
-				str = str+"implements IRememberBehavior ";
-			}
-			str = str+
-					"{\r\n"+
-					"\r\n" + 
-					"	public Foobar(GhostBase frame) {\r\n" + 
-					"		super(frame);\r\n" + 
-					"	}\r\n" + 
-					"\r\n" + 
-					"	public Foobar() {\r\n" + 
-					"	}\r\n" + 
-					"\r\n";
+		else if(BehaviorCB.getSelectedItem() == "Ask") {
+			str = str+"Behavior_Ask ";
 		}
-		else if(BehaviorCB.getSelectedItem() == "LongTalk")
-		{
-			str = "package ghost_behaviors;\r\n" + 
-					"\r\n" + 
-					"import ghostpet.GhostBase;\r\n" + 
-					"\r\n" + 
-					"public class Foobar extends Behavior_LongTalk ";
-			if(ImplementsIRemember.isSelected())
-			{
-				str = str+"implements IRememberBehavior ";
-			}
-			str = str+
-					"{\r\n"+
-					"\r\n" + 
-					"	public Foobar(GhostBase frame) {\r\n" + 
-					"		super(frame);\r\n" + 
-					"	}\r\n" + 
-					"\r\n" + 
-					"	public Foobar() {\r\n" + 
-					"	}\r\n" + 
-					"\r\n";
+		else if(BehaviorCB.getSelectedItem() == "LongTalk") {
+			str = str+"Behavior_LongTalk ";
 		}
-		else if(BehaviorCB.getSelectedItem() == "Randomizer")
-		{
-			str = "package ghost_behaviors;\r\n" + 
-					"\r\n" + 
-					"import ghostpet.GhostBase;\r\n" + 
-					"\r\n" + 
-					"public class Foobar extends Behavior_Randomizer ";
-			if(ImplementsIRemember.isSelected())
-			{
-				str = str+"implements IRememberBehavior ";
-			}
-			str = str+
-					"{\r\n"+
-					"\r\n" + 
-					"	public Foobar(GhostBase frame) {\r\n" + 
-					"		super(frame);\r\n" + 
-					"	}\r\n" + 
-					"\r\n" + 
-					"	public Foobar() {\r\n" + 
-					"	}\r\n" + 
-					"\r\n";
+		else if(BehaviorCB.getSelectedItem() == "Randomizer") {
+			str = str+"Behavior_Randomizer ";
+		}
+		else if(BehaviorCB.getSelectedItem() == "Sequence") {
+			str = str+"Behavior_Sequence";
 		}
 		else
 		{
 			JOptionPane.showMessageDialog(frame, "Select a behavior type for the ghost.");
 			return "";
 		}
-		
+		if(ImplementsIRemember.isSelected())
+		{
+			str = str+"implements IRememberBehavior ";
+		}
+		str = str+ //This part is the same for all of them.
+				"{\r\n" +
+				"\r\n";
 		if(ImplementsIRemember.isSelected())
 		{
 			str = str+ 
@@ -663,7 +604,7 @@ public class App {
 			obj.addProperty("actTime", -1);
 			obj.addProperty("hasSetValue", false);
 		}
-		else if(BehaviorCB.getSelectedItem() == "Randomizer")
+		else if((BehaviorCB.getSelectedItem() == "Randomizer") || (BehaviorCB.getSelectedItem() == "Sequence"))
 		{
 			JsonArray behaves = new JsonArray();
 			for(int i = 0; i < cont.list.size(); i++)
@@ -699,13 +640,7 @@ public class App {
 				"import ghostpet.GhostBase;\r\n" + 
 				"\r\n" + 
 				"public class Foobar extends Behavior_Timed {\r\n" + 
-				"\r\n" + 
-				"	public Foobar(GhostBase frame) {\r\n" + 
-				"		super(frame);\r\n" + 
-				"	}\r\n" + 
-				"\r\n" + 
-				"	public Foobar() {\r\n" + 
-				"	}\r\n" + 
+				"\r\n" +  
 				"\r\n" + 
 				"}";
 		str = str.replaceAll(Pattern.quote("Foobar"), ("Timer_"+txtbehavior.getText()));
@@ -750,6 +685,11 @@ public class App {
 			fr.close();
 		
 			JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+			if(compiler == null)
+			{
+				JOptionPane.showMessageDialog(frame, "The compiler is null. Cannot compile.");
+				return;
+			}
 			StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 			File[] files = {new File(ghostRoot.getAbsolutePath()+"\\src\\ghost_behaviors\\"+txtbehavior.getText()+".java")};
 			Iterable<? extends JavaFileObject> compilationUnits =
@@ -761,8 +701,7 @@ public class App {
 				JOptionPane.showMessageDialog(frame, "Compilation failed. Unsure why.");
 				return;
 			}
-			String jarupdate = "jar uf "+ghostRoot.getAbsolutePath()+"\\ghostpet.jar -C "+ghostRoot.getAbsolutePath()+"\\bin ghost_behaviors\\"+txtbehavior.getText()+".class";
-			
+			String jarupdate = "jar uf \""+ghostRoot.getAbsolutePath()+"\\ghostpet.jar\" -C \""+ghostRoot.getAbsolutePath()+"\\bin\" ghost_behaviors\\"+txtbehavior.getText()+".class";
 			if(IsTimed.isSelected())
 			{
 				WriteTimedJson(ghostRoot.getPath());
